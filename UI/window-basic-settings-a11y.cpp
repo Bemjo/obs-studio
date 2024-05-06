@@ -82,6 +82,9 @@ void OBSBasicSettings::LoadA11ySettings(bool presetChange)
 		selectGreen = 0xFF56C9;
 		selectBlue = 0xB09B44;
 
+		indicatorActive = 0x4A1A60;
+		indicatorPaused = 0x675B28;
+
 		SetDefaultColors();
 	} else if (preset == COLOR_PRESET_CUSTOM) {
 		SetDefaultColors();
@@ -105,6 +108,11 @@ void OBSBasicSettings::LoadA11ySettings(bool presetChange)
 						   "MixerYellowActive");
 		mixerRedActive = config_get_int(config, "Accessibility",
 						"MixerRedActive");
+
+		indicatorActive =
+			config_get_int(config, "Accessibility", "Active");
+		indicatorPaused =
+			config_get_int(config, "Accessibility", "Paused");
 	}
 
 	UpdateA11yColors();
@@ -132,6 +140,8 @@ void OBSBasicSettings::SaveA11ySettings()
 		       mixerYellowActive);
 	config_set_int(config, "Accessibility", "MixerRedActive",
 		       mixerRedActive);
+	config_set_int(config, "Accessibility", "Active", indicatorActive);
+	config_set_int(config, "Accessibility", "Paused", indicatorPaused);
 
 	main->RefreshVolumeColors();
 }
@@ -164,6 +174,8 @@ void OBSBasicSettings::UpdateA11yColors()
 	SetStyle(ui->color7, mixerGreenActive);
 	SetStyle(ui->color8, mixerYellowActive);
 	SetStyle(ui->color9, mixerRedActive);
+	SetStyle(ui->color10, indicatorActive);
+	SetStyle(ui->color11, indicatorPaused);
 }
 
 void OBSBasicSettings::SetDefaultColors()
@@ -187,6 +199,10 @@ void OBSBasicSettings::SetDefaultColors()
 			       mixerYellowActive);
 	config_set_default_int(config, "Accessibility", "MixerRedActive",
 			       mixerRedActive);
+	config_set_default_int(config, "Accessibility", "Active",
+			       indicatorActive);
+	config_set_default_int(config, "Accessibility", "Paused",
+			       indicatorPaused);
 }
 
 void OBSBasicSettings::ResetDefaultColors()
@@ -200,6 +216,8 @@ void OBSBasicSettings::ResetDefaultColors()
 	mixerGreenActive = 0x4cff4c;
 	mixerYellowActive = 0x4cffff;
 	mixerRedActive = 0x4c4cff;
+	indicatorActive = 0x1514BD;
+	indicatorPaused = 0x0AA5E5;
 }
 
 void OBSBasicSettings::on_colorPreset_currentIndexChanged(int idx)
@@ -387,6 +405,48 @@ void OBSBasicSettings::on_choose9_clicked()
 		return;
 
 	mixerRedActive = color_to_int(color);
+
+	preset = COLOR_PRESET_CUSTOM;
+	bool block = ui->colorPreset->blockSignals(true);
+	ui->colorPreset->setCurrentIndex(ui->colorPreset->count() - 1);
+	ui->colorPreset->blockSignals(block);
+
+	A11yChanged();
+
+	UpdateA11yColors();
+}
+
+void OBSBasicSettings::on_choose10_clicked()
+{
+	QColor color = GetColor(
+		indicatorActive,
+		QTStr("Basic.Settings.Accessibility.ColorOverrides.Active"));
+
+	if (!color.isValid())
+		return;
+
+	indicatorActive = color_to_int(color);
+
+	preset = COLOR_PRESET_CUSTOM;
+	bool block = ui->colorPreset->blockSignals(true);
+	ui->colorPreset->setCurrentIndex(ui->colorPreset->count() - 1);
+	ui->colorPreset->blockSignals(block);
+
+	A11yChanged();
+
+	UpdateA11yColors();
+}
+
+void OBSBasicSettings::on_choose11_clicked()
+{
+	QColor color = GetColor(
+		indicatorPaused,
+		QTStr("Basic.Settings.Accessibility.ColorOverrides.Paused"));
+
+	if (!color.isValid())
+		return;
+
+	indicatorPaused = color_to_int(color);
 
 	preset = COLOR_PRESET_CUSTOM;
 	bool block = ui->colorPreset->blockSignals(true);

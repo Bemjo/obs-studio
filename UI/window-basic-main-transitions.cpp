@@ -1733,6 +1733,46 @@ void OBSBasic::RenderProgram(void *data, uint32_t, uint32_t)
 	gs_viewport_push();
 	gs_projection_push();
 
+	/* Render the activity indicator frame below the scene */
+
+	if (window->activityBorder) {
+		bool isStreaming = window->StreamingActive();
+		bool isRecording = window->RecordingActive();
+
+		if (isStreaming || isRecording) {
+			int borderSize = window->activityBorderSize;
+			int borderSizex2 = borderSize * 2;
+
+			float tx = window->programX - borderSize;
+			float ty = window->programY - borderSize;
+			uint32_t cx = window->programCX + borderSizex2;
+			uint32_t cy = window->programCY + borderSizex2;
+			gs_effect_t *solid =
+				obs_get_base_effect(OBS_EFFECT_SOLID);
+			gs_eparam_t *color =
+				gs_effect_get_param_by_name(solid, "color");
+
+			QColor stateColor =
+				(!isStreaming &&
+				 obs_frontend_recording_paused())
+					? window->GetPausedIndicatorColor()
+					: window->GetActiveIndicatorColor();
+			vec4 colorVal;
+
+			vec4_set(&colorVal, stateColor.redF(),
+				 stateColor.greenF(), stateColor.blueF(), 1.0f);
+
+			gs_matrix_push();
+			gs_matrix_translate3f(tx, ty, 0.0f);
+			gs_effect_set_vec4(color, &colorVal);
+
+			while (gs_effect_loop(solid, "Solid"))
+				gs_draw_sprite(nullptr, 0, cx, cy);
+
+			gs_matrix_pop();
+		}
+	}
+
 	/* --------------------------------------- */
 
 	gs_ortho(0.0f, float(ovi.base_width), 0.0f, float(ovi.base_height),

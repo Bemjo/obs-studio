@@ -406,6 +406,8 @@ OBSBasicSettings::OBSBasicSettings(QWidget *parent)
 	HookWidget(ui->multiviewDrawNames,   CHECK_CHANGED,  GENERAL_CHANGED);
 	HookWidget(ui->multiviewDrawAreas,   CHECK_CHANGED,  GENERAL_CHANGED);
 	HookWidget(ui->multiviewLayout,      COMBO_CHANGED,  GENERAL_CHANGED);
+	HookWidget(ui->activityBorder,       CHECK_CHANGED,  GENERAL_CHANGED);
+	HookWidget(ui->activityBorderSize,   SCROLL_CHANGED, GENERAL_CHANGED);
 	HookWidget(ui->theme, 		     COMBO_CHANGED,  APPEAR_CHANGED);
 	HookWidget(ui->themeVariant,	     COMBO_CHANGED,  APPEAR_CHANGED);
 	HookWidget(ui->service,              COMBO_CHANGED,  STREAM1_CHANGED);
@@ -1525,6 +1527,14 @@ void OBSBasicSettings::LoadGeneralSettings()
 	ui->multiviewLayout->setCurrentIndex(ui->multiviewLayout->findData(
 		QVariant::fromValue(config_get_int(
 			GetGlobalConfig(), "BasicWindow", "MultiviewLayout"))));
+
+	bool activityBorder = config_get_bool(
+		GetGlobalConfig(), "BasicWindow", "ActivityBorder");
+	ui->activityBorder->setChecked(activityBorder);
+
+	float activityBorderSize = config_get_uint(
+		GetGlobalConfig(), "BasicWindow", "ActivityBorderSize");
+	ui->activityBorderSize->setValue(activityBorderSize);
 
 	prevLangIndex = ui->language->currentIndex();
 
@@ -3515,6 +3525,24 @@ void OBSBasicSettings::SaveGeneralSettings()
 
 	if (multiviewChanged)
 		OBSProjector::UpdateMultiviewProjectors();
+
+	bool activityChanged = false;
+	if (WidgetChanged(ui->activityBorder)) {
+		config_set_bool(GetGlobalConfig(), "BasicWindow",
+				"ActivityBorder",
+				ui->activityBorder->isChecked());
+		activityChanged = true;
+	}
+
+	if (WidgetChanged(ui->activityBorderSize)) {
+		config_set_uint(GetGlobalConfig(), "BasicWindow",
+				"ActivityBorderSize",
+				ui->activityBorderSize->value());
+		activityChanged = true;
+	}
+
+	if (activityChanged)
+		main->ActivityIndicatorBorder();
 }
 
 void OBSBasicSettings::SaveVideoSettings()

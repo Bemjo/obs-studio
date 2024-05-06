@@ -307,6 +307,9 @@ private:
 	int previewCX = 0, previewCY = 0;
 	float previewScale = 0.0f;
 
+	bool activityBorder = false;
+	int activityBorderSize = 4;
+
 	ConfigFile basicConfig;
 
 	std::vector<SavedProjectorInfo *> savedProjectorsArray;
@@ -663,6 +666,9 @@ private:
 	QColor GetCropColor() const;
 	QColor GetHoverColor() const;
 
+	QColor GetActiveIndicatorColor() const;
+	QColor GetPausedIndicatorColor() const;
+
 	void UpdatePreviewSpacingHelpers();
 	bool drawSpacingHelpers = true;
 
@@ -978,6 +984,8 @@ public:
 
 	void SystemTrayInit();
 	void SystemTray(bool firstStarted);
+
+	void ActivityIndicatorBorder();
 
 	void OpenSavedProjectors();
 

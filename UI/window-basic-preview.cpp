@@ -2308,6 +2308,35 @@ void OBSBasicPreview::DrawSceneEditing()
 	GS_DEBUG_MARKER_END();
 }
 
+void OBSBasicPreview::DrawActiveIndicator(bool showPaused)
+{
+	GS_DEBUG_MARKER_BEGIN(GS_DEBUG_COLOR_DEFAULT, "DrawActiveIndicator");
+	OBSBasic *main = reinterpret_cast<OBSBasic *>(App()->GetMainWindow());
+
+	int borderSize = main->activityBorderSize;
+	int borderSizex2 = borderSize * 2;
+
+	gs_effect_t *solid = obs_get_base_effect(OBS_EFFECT_SOLID);
+	gs_eparam_t *color = gs_effect_get_param_by_name(solid, "color");
+
+	QColor stateColor = showPaused ? main->GetPausedIndicatorColor()
+				       : main->GetActiveIndicatorColor();
+	vec4 colorVal;
+	vec4_set(&colorVal, stateColor.redF(), stateColor.greenF(),
+		 stateColor.blueF(), 1.0f);
+
+	gs_matrix_push();
+	gs_matrix_translate3f(-borderSize, -borderSize, 0.0f);
+	gs_effect_set_vec4(color, &colorVal);
+
+	while (gs_effect_loop(solid, "Solid"))
+		gs_draw_sprite(nullptr, 0, main->previewCX + borderSizex2,
+			       main->previewCY + borderSizex2);
+
+	gs_matrix_pop();
+	GS_DEBUG_MARKER_END();
+}
+
 void OBSBasicPreview::ResetScrollingOffset()
 {
 	vec2_zero(&scrollingOffset);

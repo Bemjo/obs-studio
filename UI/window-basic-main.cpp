@@ -2309,6 +2309,8 @@ void OBSBasic::OBSInit()
 
 	TaskbarOverlayInit();
 
+	ActivityIndicatorBorder();
+
 #ifdef __APPLE__
 	disableColorSpaceConversion(this);
 #endif
@@ -4562,6 +4564,17 @@ void OBSBasic::RenderMain(void *data, uint32_t, uint32_t)
 
 	gs_ortho(-window->previewX, right, -window->previewY, bottom, -100.0f,
 		 100.0f);
+
+	if (window->activityBorder) {
+		if (!window->IsPreviewProgramMode()) {
+			bool isStreaming = window->StreamingActive();
+			bool isRecording = window->RecordingActive();
+			if (isStreaming || isRecording)
+				window->ui->preview->DrawActiveIndicator(
+					!isStreaming &&
+					obs_frontend_recording_paused());
+		}
+	}
 
 	window->ui->preview->DrawOverflow();
 
@@ -10008,6 +10021,15 @@ bool OBSBasic::sysTrayMinimizeToTray()
 			       "SysTrayMinimizeToTray");
 }
 
+void OBSBasic::ActivityIndicatorBorder()
+{
+	activityBorder = config_get_bool(GetGlobalConfig(), "BasicWindow",
+					 "ActivityBorder");
+
+	activityBorderSize = config_get_uint(GetGlobalConfig(), "BasicWindow",
+					     "ActivityBorderSize");
+}
+
 void OBSBasic::on_actionMainUndo_triggered()
 {
 	undo_s.undo();
@@ -11126,6 +11148,28 @@ QColor OBSBasic::GetHoverColor() const
 			GetGlobalConfig(), "Accessibility", "SelectBlue"));
 	} else {
 		return QColor::fromRgb(0, 127, 255);
+	}
+}
+
+QColor OBSBasic::GetActiveIndicatorColor() const
+{
+	if (config_get_bool(GetGlobalConfig(), "Accessibility",
+			    "OverrideColors")) {
+		return color_from_int(config_get_int(
+			GetGlobalConfig(), "Accessibility", "Active"));
+	} else {
+		return QColor::fromRgb(189, 20, 21);
+	}
+}
+
+QColor OBSBasic::GetPausedIndicatorColor() const
+{
+	if (config_get_bool(GetGlobalConfig(), "Accessibility",
+			    "OverrideColors")) {
+		return color_from_int(config_get_int(
+			GetGlobalConfig(), "Accessibility", "Paused"));
+	} else {
+		return QColor::fromRgb(229, 165, 10);
 	}
 }
 

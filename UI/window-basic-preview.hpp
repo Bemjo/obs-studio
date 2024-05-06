@@ -143,6 +143,7 @@ public:
 
 	void DrawOverflow();
 	void DrawSceneEditing();
+	void DrawActiveIndicator(bool isPaused);
 
 	inline void SetLocked(bool newLockedVal) { locked = newLockedVal; }
 	inline void ToggleLocked() { locked = !locked; }
