@@ -861,10 +861,68 @@
                      </property>
                     </widget>
                    </item>
+                   <item row="3" column="0">
+                    <widget class="QLabel" name="label_multiviewBorderSize">
+                     <property name="text">
+                      <string>Basic.Settings.General.Multiview.BorderSize</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>multiviewBorderSize</cstring>
+                     </property>
+                    </widget>
+                   </item>
                    <item row="3" column="1">
+                    <widget class="QSpinBox" name="multiviewBorderSize">
+                     <property name="minimum">
+                      <number>4</number>
+                     </property>
+                     <property name="maximum">
+                      <number>48</number>
+                     </property>
+                     <property name="value">
+                      <number>4</number>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="0">
+                    <widget class="QLabel" name="label_multiviewBorderScale">
+                     <property name="toolTip">
+                      <string>Basic.Settings.General.Multiview.BorderScale.Tooltip</string>
+                     </property>
+                     <property name="text">
+                      <string>Basic.Settings.General.Multiview.BorderScale</string>
+                     </property>
+                     <property name="buddy">
+                      <cstring>multiviewSelectedBorderScale</cstring>
+                     </property>
+                    </widget>
+                   </item>
+                   <item row="4" column="1">
+                    <widget class="QDoubleSpinBox" name="multiviewBorderScale">
+                     <property name="suffix">
+                      <string notr="true">%</string>
+                     </property>
+                     <property name="decimals">
+                      <number>1</number>
+                     </property>
+                     <property name="minimum">
+                      <double>0.000000000000000</double>
+                     </property>
+                     <property name="maximum">
+                      <double>100.000000000000000</double>
+                     </property>
+                     <property name="singleStep">
+                      <double>0.500000000000000</double>
+                     </property>
+                     <property name="value">
+                      <double>50.000000000000000</double>
+                     </property>
+                    </widget>
+                   </item> 
+                   <item row="5" column="1">
                     <widget class="QComboBox" name="multiviewLayout"/>
                    </item>
-                   <item row="3" column="0">
+                   <item row="5" column="0">
                     <widget class="QLabel" name="label_64">
                      <property name="text">
                       <string>Basic.Settings.General.MultiviewLayout</string>
@@ -6602,7 +6660,7 @@
                   <item row="4" column="0">
                    <widget class="QLabel" name="colorSelectLabel_10">
                     <property name="text">
-                     <string>Basic.Settings.Accessibility.ColorOverrides.Active</string>
+                     <string>Basic.Settings.Accessibility.ColorOverrides.IndicatorActive</string>
                     </property>
                     <property name="buddy">
                      <cstring>choose10</cstring>
@@ -6688,7 +6746,7 @@
                   <item row="5" column="0">
                    <widget class="QLabel" name="colorSelectLabel_11">
                     <property name="text">
-                     <string>Basic.Settings.Accessibility.ColorOverrides.Paused</string>
+                     <string>Basic.Settings.Accessibility.ColorOverrides.IndicatorPaused</string>
                     </property>
                     <property name="buddy">
                      <cstring>choose11</cstring>
@@ -6772,6 +6830,178 @@
                    </layout>
                   </item>
                   <item row="6" column="0">
+                   <widget class="QLabel" name="colorSelectLabel_12">
+                    <property name="text">
+                     <string>Basic.Settings.Accessibility.ColorOverrides.MultiviewPreview</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>choose12</cstring>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="6" column="1">
+                   <layout class="QHBoxLayout" name="colorSelectLayout_12">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QLabel" name="color12">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>80</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string notr="true">color here</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="choose12">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Basic.PropertiesWindow.SelectColor</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="colorSpacer_12">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="7" column="0">
+                   <widget class="QLabel" name="colorSelectLabel_13">
+                    <property name="text">
+                     <string>Basic.Settings.Accessibility.ColorOverrides.MultiviewProgram</string>
+                    </property>
+                    <property name="buddy">
+                     <cstring>choose13</cstring>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="7" column="1">
+                   <layout class="QHBoxLayout" name="colorSelectLayout_13">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QLabel" name="color13">
+                      <property name="sizePolicy">
+                       <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                        <horstretch>0</horstretch>
+                        <verstretch>0</verstretch>
+                       </sizepolicy>
+                      </property>
+                      <property name="minimumSize">
+                       <size>
+                        <width>80</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string notr="true">color here</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QPushButton" name="choose13">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>Basic.PropertiesWindow.SelectColor</string>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <spacer name="colorSpacer_13">
+                      <property name="orientation">
+                       <enum>Qt::Horizontal</enum>
+                      </property>
+                      <property name="sizeHint" stdset="0">
+                       <size>
+                        <width>40</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                     </spacer>
+                    </item>
+                   </layout>
+                  </item>
+                  <item row="8" column="0">
                    <widget class="QLabel" name="colorSelectLabel_4">
                     <property name="text">
                      <string>Basic.Settings.Accessibility.ColorOverrides.MixerGreen</string>
@@ -6781,7 +7011,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="6" column="1">
+                  <item row="8" column="1">
                    <layout class="QHBoxLayout" name="colorSelectLayout_4">
                     <property name="leftMargin">
                      <number>0</number>
@@ -6857,7 +7087,7 @@
                     </item>
                    </layout>
                   </item>
-                  <item row="7" column="0">
+                  <item row="9" column="0">
                    <widget class="QLabel" name="colorSelectLabel_5">
                     <property name="text">
                      <string>Basic.Settings.Accessibility.ColorOverrides.MixerYellow</string>
@@ -6867,7 +7097,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="7" column="1">
+                  <item row="9" column="1">
                    <layout class="QHBoxLayout" name="colorSelectLayout_5">
                     <property name="leftMargin">
                      <number>0</number>
@@ -6943,7 +7173,7 @@
                     </item>
                    </layout>
                   </item>
-                  <item row="8" column="0">
+                  <item row="10" column="0">
                    <widget class="QLabel" name="colorSelectLabel_6">
                     <property name="text">
                      <string>Basic.Settings.Accessibility.ColorOverrides.MixerRed</string>
@@ -6953,7 +7183,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="8" column="1">
+                  <item row="10" column="1">
                    <layout class="QHBoxLayout" name="colorSelectLayout_6">
                     <property name="leftMargin">
                      <number>0</number>
@@ -7029,7 +7259,7 @@
                     </item>
                    </layout>
                   </item>
-                  <item row="9" column="0">
+                  <item row="11" column="0">
                    <widget class="QLabel" name="colorSelectLabel_7">
                     <property name="text">
                      <string>Basic.Settings.Accessibility.ColorOverrides.MixerGreenActive</string>
@@ -7039,7 +7269,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="9" column="1">
+                  <item row="11" column="1">
                    <layout class="QHBoxLayout" name="colorSelectLayout_7">
                     <property name="leftMargin">
                      <number>0</number>
@@ -7115,7 +7345,7 @@
                     </item>
                    </layout>
                   </item>
-                  <item row="10" column="0">
+                  <item row="12" column="0">
                    <widget class="QLabel" name="colorSelectLabel_8">
                     <property name="text">
                      <string>Basic.Settings.Accessibility.ColorOverrides.MixerYellowActive</string>
@@ -7125,7 +7355,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="10" column="1">
+                  <item row="12" column="1">
                    <layout class="QHBoxLayout" name="colorSelectLayout_8">
                     <property name="leftMargin">
                      <number>0</number>
@@ -7201,7 +7431,7 @@
                     </item>
                    </layout>
                   </item>
-                  <item row="11" column="0">
+                  <item row="13" column="0">
                    <widget class="QLabel" name="colorSelectLabel_9">
                     <property name="text">
                      <string>Basic.Settings.Accessibility.ColorOverrides.MixerRedActive</string>
@@ -7211,7 +7441,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="11" column="1">
+                  <item row="13" column="1">
                    <layout class="QHBoxLayout" name="colorSelectLayout_9">
                     <property name="leftMargin">
                      <number>0</number>
@@ -8275,6 +8505,8 @@
   <tabstop>multiviewMouseSwitch</tabstop>
   <tabstop>multiviewDrawNames</tabstop>
   <tabstop>multiviewDrawAreas</tabstop>
+  <tabstop>multiviewBorderSize</tabstop>
+  <tabstop>multiviewBorderScale</tabstop>
   <tabstop>multiviewLayout</tabstop>
   <tabstop>activityBorder</tabstop>
   <tabstop>activityBorderSize</tabstop>

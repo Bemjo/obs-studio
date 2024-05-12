@@ -520,6 +520,12 @@ bool OBSApp::InitGlobalConfigDefaults()
 	config_set_default_int(globalConfig, "BasicWindow",
 			       "ActivityBorderSize", 4);
 
+	config_set_default_double(globalConfig, "BasicWindow",
+				  "MultiviewBorderSize", 4.0);
+
+	config_set_default_double(globalConfig, "BasicWindow",
+				  "MultiviewBorderScale", 50.0);
+
 #ifdef _WIN32
 	config_set_default_bool(globalConfig, "Audio", "DisableAudioDucking",
 				true);

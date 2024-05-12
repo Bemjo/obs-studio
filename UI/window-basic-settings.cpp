@@ -405,6 +405,8 @@ OBSBasicSettings::OBSBasicSettings(QWidget *parent)
 	HookWidget(ui->multiviewMouseSwitch, CHECK_CHANGED,  GENERAL_CHANGED);
 	HookWidget(ui->multiviewDrawNames,   CHECK_CHANGED,  GENERAL_CHANGED);
 	HookWidget(ui->multiviewDrawAreas,   CHECK_CHANGED,  GENERAL_CHANGED);
+	HookWidget(ui->multiviewBorderSize,  SCROLL_CHANGED, GENERAL_CHANGED);
+	HookWidget(ui->multiviewBorderScale, DSCROLL_CHANGED,GENERAL_CHANGED);
 	HookWidget(ui->multiviewLayout,      COMBO_CHANGED,  GENERAL_CHANGED);
 	HookWidget(ui->activityBorder,       CHECK_CHANGED,  GENERAL_CHANGED);
 	HookWidget(ui->activityBorderSize,   SCROLL_CHANGED, GENERAL_CHANGED);
@@ -1492,6 +1494,14 @@ void OBSBasicSettings::LoadGeneralSettings()
 	bool multiviewDrawAreas = config_get_bool(
 		GetGlobalConfig(), "BasicWindow", "MultiviewDrawAreas");
 	ui->multiviewDrawAreas->setChecked(multiviewDrawAreas);
+
+	double multiviewBorderSize = config_get_double(
+		GetGlobalConfig(), "BasicWindow", "MultiviewBorderSize");
+	ui->multiviewBorderSize->setValue(multiviewBorderSize);
+
+	double multiviewBorderScale = config_get_double(
+		GetGlobalConfig(), "BasicWindow", "MultiviewBorderScale");
+	ui->multiviewBorderScale->setValue(multiviewBorderScale);
 
 	ui->multiviewLayout->addItem(
 		QTStr("Basic.Settings.General.MultiviewLayout.Horizontal.Top"),
@@ -3495,6 +3505,7 @@ void OBSBasicSettings::SaveGeneralSettings()
 	}
 
 	bool multiviewChanged = false;
+
 	if (WidgetChanged(ui->multiviewMouseSwitch)) {
 		config_set_bool(GetGlobalConfig(), "BasicWindow",
 				"MultiviewMouseSwitch",
@@ -3513,6 +3524,20 @@ void OBSBasicSettings::SaveGeneralSettings()
 		config_set_bool(GetGlobalConfig(), "BasicWindow",
 				"MultiviewDrawAreas",
 				ui->multiviewDrawAreas->isChecked());
+		multiviewChanged = true;
+	}
+
+	if (WidgetChanged(ui->multiviewBorderSize)) {
+		config_set_double(GetGlobalConfig(), "BasicWindow",
+				  "MultiviewBorderSize",
+				  ui->multiviewBorderSize->value());
+		multiviewChanged = true;
+	}
+
+	if (WidgetChanged(ui->multiviewBorderScale)) {
+		config_set_double(GetGlobalConfig(), "BasicWindow",
+				  "MultiviewBorderScale",
+				  ui->multiviewBorderScale->value());
 		multiviewChanged = true;
 	}
 

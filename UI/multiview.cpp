@@ -65,11 +65,18 @@ static OBSSource CreateLabel(const char *name, size_t h)
 }
 
 void Multiview::Update(MultiviewLayout multiviewLayout, bool drawLabel,
-		       bool drawSafeArea)
+		       bool drawSafeArea, float borderSize, float borderScale)
 {
 	this->multiviewLayout = multiviewLayout;
 	this->drawLabel = drawLabel;
 	this->drawSafeArea = drawSafeArea;
+	activeThickness = borderSize;
+	activeThicknessx2 = activeThickness * 2;
+	selectedThickness =
+		((1.0f - borderScale) * thickness) + (borderScale * borderSize);
+	selectedThicknessx2 = selectedThickness * 2;
+
+	refreshColors();
 
 	multiviewScenes.clear();
 	multiviewLabels.clear();
@@ -133,8 +140,12 @@ void Multiview::Update(MultiviewLayout multiviewLayout, bool drawLabel,
 
 	ppiCX = pvwprgCX - thicknessx2;
 	ppiCY = pvwprgCY - thicknessx2;
-	ppiScaleX = (pvwprgCX - thicknessx2) / fw;
-	ppiScaleY = (pvwprgCY - thicknessx2) / fh;
+	ppiCXEx = pvwprgCX - activeThicknessx2;
+	ppiCYEx = pvwprgCY - activeThicknessx2;
+	ppiScaleX = ppiCX / fw;
+	ppiScaleY = ppiCY / fh;
+	ppiScaleXEx = ppiCXEx / fw;
+	ppiScaleYEx = ppiCYEx / fh;
 
 	switch (multiviewLayout) {
 	case MultiviewLayout::HORIZONTAL_TOP_18_SCENES:
@@ -155,8 +166,12 @@ void Multiview::Update(MultiviewLayout multiviewLayout, bool drawLabel,
 
 	siCX = scenesCX - thicknessx2;
 	siCY = scenesCY - thicknessx2;
-	siScaleX = (scenesCX - thicknessx2) / fw;
-	siScaleY = (scenesCY - thicknessx2) / fh;
+	siCXSel = scenesCX - selectedThicknessx2;
+	siCYSel = scenesCY - selectedThicknessx2;
+	siScaleX = siCX / fw;
+	siScaleY = siCY / fh;
+	siScaleXSel = siCXSel / fw;
+	siScaleYSel = siCYSel / fh;
 
 	numSrcs = 0;
 	size_t i = 0;
@@ -311,6 +326,8 @@ void Multiview::Render(uint32_t cx, uint32_t cy)
 		}
 		siX = sourceX + thickness;
 		siY = sourceY + thickness;
+		siXSel = sourceX + selectedThickness;
+		siYSel = sourceY + selectedThickness;
 	};
 
 	auto calcPreviewProgram = [&](bool program) {
@@ -414,18 +431,31 @@ void Multiview::Render(uint32_t cx, uint32_t cy)
 		else if (src == previewSrc)
 			colorVal = studioMode ? previewColor : programColor;
 
+		float x = siX, y = siY;
+		float scnX = siCX, scnY = siCY;
+		float scnScaleX = siScaleX, scnScaleY = siScaleY;
+
+		if (src == programSrc || src == previewSrc) {
+			x = siXSel;
+			y = siYSel;
+			scnX = siCXSel;
+			scnY = siCYSel;
+			scnScaleX = siScaleXSel;
+			scnScaleY = siScaleYSel;
+		}
+
 		// Paint the background
 		paintAreaWithColor(sourceX, sourceY, scenesCX, scenesCY,
 				   colorVal);
-		paintAreaWithColor(siX, siY, siCX, siCY, backgroundColor);
+		paintAreaWithColor(x, y, scnX, scnY, backgroundColor);
 
 		/* ----------- */
 
 		// Render the source
 		gs_matrix_push();
-		gs_matrix_translate3f(siX, siY, 0.0f);
-		gs_matrix_scale3f(siScaleX, siScaleY, 1.0f);
-		setRegion(siX, siY, siCX, siCY);
+		gs_matrix_translate3f(x, y, 0.0f);
+		gs_matrix_scale3f(scnScaleX, scnScaleY, 1.0f);
+		setRegion(x, y, scnX, scnY);
 		obs_source_video_render(src);
 		endRegion();
 		gs_matrix_pop();
@@ -515,13 +545,33 @@ void Multiview::Render(uint32_t cx, uint32_t cy)
 	offset = labelOffset(multiviewLayout, programLabel, pvwprgCX);
 	calcPreviewProgram(true);
 
-	paintAreaWithColor(sourceX, sourceY, ppiCX, ppiCY, backgroundColor);
+	sourceX -= thickness;
+	sourceY -= thickness;
+	cx = ppiCX + thicknessx2;
+	cy = ppiCY + thicknessx2;
+
+	uint32_t colorVal = outerColor;
+
+	if (main->StreamingActive() || main->RecordingActive()) {
+		if (obs_frontend_recording_paused())
+			colorVal = pausedColor;
+		else
+			colorVal = activeColor;
+	}
+
+	// paint active status background
+	paintAreaWithColor(sourceX, sourceY, cx, cy, colorVal);
+
+	sourceX += activeThickness;
+	sourceY += activeThickness;
+
+	paintAreaWithColor(sourceX, sourceY, ppiCXEx, ppiCYEx, backgroundColor);
 
 	// Scale and Draw the program
 	gs_matrix_push();
 	gs_matrix_translate3f(sourceX, sourceY, 0.0f);
-	gs_matrix_scale3f(ppiScaleX, ppiScaleY, 1.0f);
-	setRegion(sourceX, sourceY, ppiCX, ppiCY);
+	gs_matrix_scale3f(ppiScaleXEx, ppiScaleYEx, 1.0f);
+	setRegion(sourceX, sourceY, ppiCXEx, ppiCYEx);
 	obs_render_main_texture();
 	endRegion();
 	gs_matrix_pop();
@@ -757,4 +807,40 @@ OBSSource Multiview::GetSourceByPosition(int x, int y)
 	if (pos < 0 || pos >= (int)numSrcs)
 		return nullptr;
 	return OBSGetStrongRef(multiviewScenes[pos]);
+}
+
+void Multiview::refreshColors()
+{
+	static const auto set_alpha = [&](uint32_t colorVal, uint8_t alpha) {
+		return (colorVal & 0x00FFFFFF) | (alpha << 24);
+	};
+
+	static const auto abgr_to_argb = [&](uint32_t colorVal) {
+		return (colorVal & 0xFF00FF00) | ((colorVal & 0xFF) << 16) |
+		       ((colorVal & 0xFF0000) >> 16);
+	};
+
+	if (config_get_bool(GetGlobalConfig(), "Accessibility",
+			    "OverrideColors")) {
+		previewColor = abgr_to_argb(config_get_int(GetGlobalConfig(),
+							   "Accessibility",
+							   "MultiviewPreview"));
+		programColor = abgr_to_argb(config_get_int(GetGlobalConfig(),
+							   "Accessibility",
+							   "MultiviewProgram"));
+		activeColor = abgr_to_argb(config_get_int(
+			GetGlobalConfig(), "Accessibility", "Active"));
+		pausedColor = abgr_to_argb(config_get_int(
+			GetGlobalConfig(), "Accessibility", "Paused"));
+	} else {
+		previewColor = previewColorDefault;
+		programColor = programColorDefault;
+		activeColor = indicatorRedDefault;
+		pausedColor = indicatorOrangeDefault;
+	}
+
+	previewColor = set_alpha(previewColor, 0xFF);
+	programColor = set_alpha(programColor, 0xFF);
+	activeColor = set_alpha(activeColor, 0xFF);
+	pausedColor = set_alpha(pausedColor, 0xFF);
 }

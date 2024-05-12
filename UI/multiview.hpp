@@ -21,7 +21,7 @@ public:
 	Multiview();
 	~Multiview();
 	void Update(MultiviewLayout multiviewLayout, bool drawLabel,
-		    bool drawSafeArea);
+		    bool drawSafeArea, float borderSize, float borderScale);
 	void Render(uint32_t cx, uint32_t cy);
 	OBSSource GetSourceByPosition(int x, int y);
 
@@ -40,18 +40,31 @@ private:
 	std::vector<OBSSource> multiviewLabels;
 
 	// Multiview position helpers
-	float thickness = 4;
-	float offset, thicknessx2 = thickness * 2, pvwprgCX, pvwprgCY, sourceX,
-		      sourceY, labelX, labelY, scenesCX, scenesCY, ppiCX, ppiCY,
-		      siX, siY, siCX, siCY, ppiScaleX, ppiScaleY, siScaleX,
-		      siScaleY, fw, fh, ratio;
+	float thickness = 4, thicknessx2 = thickness * 2;
+	float activeThickness = 4, activeThicknessx2 = activeThickness * 2;
+	float selectedThickness = 4,
+	      selectedThicknessx2 = selectedThickness * 2;
+	float offset, pvwprgCX, pvwprgCY, sourceX, sourceY, labelX, labelY,
+		scenesCX, scenesCY, ppiCX, ppiCY, ppiCXEx, ppiCYEx, siX, siY,
+		siXSel, siYSel, siCX, siCY, siCXSel, siCYSel, ppiScaleX,
+		ppiScaleY, ppiScaleXEx, ppiScaleYEx, siScaleX, siScaleY,
+		siScaleXSel, siScaleYSel, fw, fh, ratio;
 
 	// argb colors
 	static const uint32_t outerColor = 0xFFD0D0D0;
 	static const uint32_t labelColor = 0xD91F1F1F;
 	static const uint32_t backgroundColor = 0xFF000000;
-	static const uint32_t previewColor = 0xFF00D000;
-	static const uint32_t programColor = 0xFFD00000;
+	static const uint32_t previewColorDefault = 0xFF00D000;
+	static const uint32_t programColorDefault = 0xFFD00000;
+	static const uint32_t indicatorRedDefault = 0xFFBD1415;
+	static const uint32_t indicatorOrangeDefault = 0xFFE5A50A;
+
+	uint32_t previewColor;
+	uint32_t programColor;
+	uint32_t activeColor;
+	uint32_t pausedColor;
+
+	void refreshColors();
 };
 
 static inline void startRegion(int vX, int vY, int vCX, int vCY, float oL,
