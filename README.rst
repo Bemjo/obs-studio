@@ -1,3 +1,9 @@
+This is a fork of the OBS Studio Project as described below with experimental features as contracted work.  
+I can not provide support for this fork. You are on your own if you choose to use it.  
+It is not suitable for review or consideration into the OBS project, as it is an amalgamation of squashed commits and branches from private local branches.  
+Its features include an indicator border of the current output status around the program scene in the preview area, and around the multiview program scene.  
+A complete list of features can be found in the commit messages.  
+
 OBS Studio <https://obsproject.com>
 ===================================
 
